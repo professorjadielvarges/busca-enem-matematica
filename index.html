@@ -9,7 +9,7 @@
 /* Tela clara de papel, cartões brancos com filete de cinco cores (uma por área do Enem), números em fonte de dados.
    Busca no topo; resultados à esquerda e o mapa semântico das 405 questões à direita. */
 :root{
-  --bg:#F2F1EC; --card:#FFFFFF; --card2:#FAFAF7; --ink:#191C24; --muted:#6A6F7C; --line:#E4E3DC;
+  --bg:#F2F1EC; --card:#FFFFFF; --card2:#FAFAF7; --ink:#191C24; --tit:#2E3341; --tit-w:700; --muted:#6A6F7C; --line:#E4E3DC;
   --a1:#2F6DB5; --a1s:#E3EDF8;   /* Conhecimentos numéricos */
   --a2:#5B3FB5; --a2s:#ECE7F8;   /* geométricos */
   --a3:#12805C; --a3s:#E1F2EA;   /* estatística e probabilidade */
@@ -26,7 +26,7 @@
   --folha:#FFFEFB;
 }
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
-  --bg:#192036; --card:#1F2740; --card2:#252E49; --ink:#ECEEF5; --muted:#A6AEC2; --line:#323C5A;
+  --bg:#192036; --card:#1F2740; --card2:#252E49; --ink:#ECEEF5; --tit:#CDD3E2; --tit-w:600; --muted:#A6AEC2; --line:#323C5A;
   --a1:#78A9E6; --a1s:#1A2A40; --a2:#A48BEE; --a2s:#251E3E; --a3:#5FCB9C; --a3s:#13302A;
   --a4:#D8B25C; --a4s:#33290F; --a5:#EE8C74; --a5s:#3A1F19;
   --accent:#78A9E6; --ok:#5FCB9C; --ok-s:#13302A; --warn:#E5B85A;
@@ -34,7 +34,7 @@
   --rail:linear-gradient(90deg,#D8B25C,#78A9E6 35%,#5FCB9C 70%,#EE8C74);
   --shadow:0 1px 2px rgba(0,0,0,.35),0 12px 34px rgba(0,0,0,.35); color-scheme:dark } }
 :root[data-theme="dark"]{
-  --bg:#192036; --card:#1F2740; --card2:#252E49; --ink:#ECEEF5; --muted:#A6AEC2; --line:#323C5A;
+  --bg:#192036; --card:#1F2740; --card2:#252E49; --ink:#ECEEF5; --tit:#CDD3E2; --tit-w:600; --muted:#A6AEC2; --line:#323C5A;
   --a1:#78A9E6; --a1s:#1A2A40; --a2:#A48BEE; --a2s:#251E3E; --a3:#5FCB9C; --a3s:#13302A;
   --a4:#D8B25C; --a4s:#33290F; --a5:#EE8C74; --a5s:#3A1F19;
   --accent:#78A9E6; --ok:#5FCB9C; --ok-s:#13302A; --warn:#E5B85A;
@@ -223,7 +223,7 @@ select{font:inherit;font-size:13px;border:1px solid var(--line);background:var(-
 .q .lado{padding-top:2px}
 .q .corpo-q{min-width:0;display:flex;flex-direction:column;gap:8px}
 .q-top{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center}
-.q h3{font-family:var(--f-head);font-size:16.5px;font-weight:700;line-height:1.35;letter-spacing:-.01em;text-wrap:wrap;max-width:none}
+.q h3{font-family:var(--f-head);font-size:16.5px;font-weight:var(--tit-w);color:var(--tit);line-height:1.35;letter-spacing:-.01em;text-wrap:wrap;max-width:none}
 .trecho{font-family:var(--f-texto);font-size:15px;line-height:1.6;color:var(--muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere}
 .mais{font-family:var(--f-data);font-size:11.5px;color:var(--muted)}
 .fig-i{display:inline-flex;align-items:center;gap:4px;font-size:12px;color:var(--muted)}
@@ -931,8 +931,12 @@ function barraFiltros(n){
     ${estado.area?`<button type="button" class="tg" id="fArea" aria-pressed="true">${esc((AREA[estado.area]||{}).curto)} ✕</button>`:""}
     <span class="esp"></span><span class="cont">${n}</span></div>`;
 }
+const semAc=t=>t.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
+function conteudosNaConsulta(t){ const qn=semAc(t).replace(/[^a-z0-9 ]/g," ").replace(/\s+/g," ").trim(); if(qn.length<4) return [];
+  const todos=[...new Set(Q.flatMap(q=>q.cont))];
+  return todos.filter(c=>{ const cn=semAc(c); return cn===qn || (" "+qn+" ").includes(" "+cn+" ") || cn.split(/[^a-z0-9]+/).includes(qn); }).slice(0,2); }
 async function vistaBuscar(){
-  let ordem=[], rel=null, titulo, nota="";
+  let ordem=[], rel=null, titulo, nota="", atalho="";
   if(estado.parecidaDe!=null){
     const i=estado.parecidaDe, b=linha(VD,i), s=Q.map((_,k)=>k===i?-9:dotRow(VD,k,b));
     ordem=[i,...[...s.keys()].filter(k=>k!==i).sort((x,y)=>s[y]-s[x])]; const mx=s[ordem[1]];
@@ -943,12 +947,14 @@ async function vistaBuscar(){
     if(qwen){ const v=await vetorConsulta(estado.consulta); s=rrf(Float32Array.from(Q.map((_,k)=>dotRow(VD,k,v))),pal); modo="palavras e significado"; }
     ordem=[...s.keys()].filter(k=>s[k]>0).sort((x,y)=>s[y]-s[x]); const mx=s[ordem[0]]||1; rel=k=>s[k]/mx;
     titulo=estado.exemplo?`<span class="ex">Exemplo de busca · digite a sua no campo acima</span>“${esc(estado.consulta)}”`:`Resultados para “${esc(estado.consulta)}”`; nota=`<p class="cont">Busca por ${modo}</p>`;
+    const cs=conteudosNaConsulta(estado.consulta);
+    if(cs.length) atalho=`<p class="aviso atalho-cont">${cs.map(c=>{ const n=Q.filter(q=>q.cont[0]===c).length; return `Quer todas as questões de <b>${esc(c)}</b>? <button type="button" class="lnk" data-cont="${esc(c)}">Ver as ${n} em que ${esc(c)} é o conteúdo principal</button>`; }).join("<br>")}</p>`;
   } else { ordem=Q.map((_,k)=>k); titulo="Todas as questões"; }
   const vis=ordem.filter(k=>passa(Q[k])||k===estado.parecidaDe).slice(0,30);
   destaque=(estado.consulta||estado.parecidaDe!=null)?vis:[]; listaAtual=vis;
   $("#vista").innerHTML=`<div class="duas"><section class="res" aria-live="polite">
       <div class="titulo-res"><h2>${titulo}</h2>${nota&&!nota.startsWith("<p class=\"aviso")?nota:""}</div>
-      ${nota.startsWith('<p class="aviso')?nota:""}${barraFiltros(`${vis.length} mostradas`)}
+      ${nota.startsWith('<p class="aviso')?nota:""}${atalho}${barraFiltros(`${vis.length} mostradas`)}
       ${vis.length?vis.map((k,r)=>cartao(k,(estado.consulta||estado.parecidaDe!=null)?r+1:null,rel?rel(k):null)).join(""):`<p class="vazio">Nenhuma questão com essas palavras e filtros. Tente outra palavra, tire um filtro ou ligue a busca inteligente.</p>`}
     </section>${cartaoMapa()}</div>`;
   $("#limpar")?.addEventListener("click",()=>{ estado.parecidaDe=null; mostrar(); });
@@ -1192,9 +1198,9 @@ function vistaGuia(){
     <p>As abas <b>Conteúdos</b> e <b>Habilidades</b> mostram todas as questões de cada conteúdo e de cada habilidade da Matriz do Enem, úteis para planejar o ano.</p></section>
    <section class="card painel" id="g-aula"><h2>Exemplo de roteiro de aula: aumentos e descontos sucessivos</h2>
     <p>Duas aulas de 50 minutos, para a 1ª ou 2ª série. Objetivo: perceber que porcentagens sucessivas se compõem <b>multiplicando os fatores</b>, e não somando as taxas (um desconto de 20% seguido de outro de 10% não é um desconto de 30%). Habilidades: H3 e H4 da Matriz do Enem; EM13MAT104 da BNCC.</p>
-    <div class="guia-acoes">${buscar("desconto sobre desconto")}</div>
+    <div class="guia-acoes">${buscar("aumentos e descontos sucessivos")}</div>
     <div style="overflow-x:auto"><table class="guia-tab"><thead><tr><th>Momento</th><th>Tempo</th><th>O que acontece</th><th>Questão</th></tr></thead><tbody>
-     <tr><td>Preparação</td><td>10 min</td><td>Buscar “desconto sobre desconto” e abrir a questão do Enem 2013; nas vizinhas pelo significado aparecem as outras duas.</td><td class="vazio">—</td></tr>
+     <tr><td>Preparação</td><td>10 min</td><td>Buscar “aumentos e descontos sucessivos” e abrir a questão do Enem 2013; nas vizinhas pelo significado aparecem as outras duas.</td><td class="vazio">—</td></tr>
      <tr><td>1ª aula: problema gerador</td><td>25 min</td><td>Resolução em duplas, sem as alternativas; cada dupla mostra a sua estratégia.</td><td>${abrir("2.5-05","Enem 2013")}</td></tr>
      <tr><td>1ª aula: formalização</td><td>25 min</td><td>Preço final: 50 × 0,8 × 0,9 = 50 × 0,72 = 36, isto é, desconto total de 28%. Um aumento de i% é o fator 1 + i/100.</td><td class="vazio">—</td></tr>
      <tr><td>2ª aula: aplicação</td><td>30 min</td><td>Geladeira: 1.000 × 1,1 × 0,98 = 1.078, e não 1.080 (por que a cliente errou?). Aplicação: perde 30% e recupera 20% do que perdeu, sobra 0,76 do valor; 3.800 ÷ 0,76 = 5.000.</td><td>${abrir("2022-167","Enem 2022")} ${abrir("2.8-02","Enem 2011")}</td></tr>
