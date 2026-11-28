@@ -603,11 +603,35 @@ body:not([data-v="buscar"]) #banco{display:none}
 @property --gira{syntax:"<angle>";inherits:false;initial-value:0deg}
 .ficha .jchips{display:flex;flex-direction:column;align-items:flex-start;gap:8px}
 .ficha .tag.cp{position:relative;font-size:13px;padding:5px 13px;border:2px solid transparent;background:linear-gradient(var(--s),var(--s)) padding-box,conic-gradient(from var(--gira),color-mix(in srgb,var(--c) 25%,transparent) 0deg,var(--c) 50deg,#fff 70deg,var(--c) 90deg,color-mix(in srgb,var(--c) 25%,transparent) 140deg,color-mix(in srgb,var(--c) 25%,transparent) 360deg) border-box;box-shadow:0 0 0 0 transparent;animation:gira 3.5s linear infinite,brilho 3.5s ease-in-out infinite}
-.ficha .tag.cp::before{content:"Principal";display:block;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;opacity:.75;font-weight:700;margin-bottom:1px}
+
 @keyframes gira{to{--gira:360deg}}
 @keyframes brilho{50%{box-shadow:0 0 10px 1px color-mix(in srgb,var(--c) 30%,transparent)}}
 @media (prefers-reduced-motion: reduce){.ficha .tag.cp{animation:none;border-color:var(--c)}}
 .tag.cr{font-weight:600;color:color-mix(in srgb,var(--c) 45%,var(--tre));border-width:1px;border-color:color-mix(in srgb,var(--c) 30%,transparent);background:transparent}
+
+/* tour guiado */
+.tour-lnk{margin-top:12px;display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.08);border:1px solid rgba(156,200,255,.35);color:#CFE3FF;font:600 13px/1 inherit;font-family:inherit;padding:9px 14px;border-radius:999px;cursor:pointer;transition:background .2s,border-color .2s}
+.tour-lnk:hover{background:rgba(255,255,255,.14);border-color:rgba(156,200,255,.7)}
+.tour-lnk i{width:18px;height:18px;border-radius:50%;background:#8EC1FF;color:#0B1426;display:grid;place-items:center;font-style:normal;font-size:9px;box-shadow:0 0 12px #8EC1FF}
+.guia-tour{margin-top:12px;width:100%;justify-content:center}
+.tour{position:fixed;inset:0;z-index:9000;pointer-events:none}
+.tour-bloq{position:fixed;inset:0;pointer-events:auto}
+.tour-luz{position:fixed;border-radius:18px;box-shadow:0 0 0 9999px rgba(6,10,22,.66),0 0 0 2px rgba(142,193,255,.95),0 0 28px 4px rgba(142,193,255,.45);transition:top .38s cubic-bezier(.2,.8,.2,1),left .38s cubic-bezier(.2,.8,.2,1),width .38s cubic-bezier(.2,.8,.2,1),height .38s cubic-bezier(.2,.8,.2,1);pointer-events:none}
+.tour-luz::after{content:"";position:absolute;inset:-6px;border-radius:22px;border:2px solid rgba(142,193,255,.55);animation:tourPulso 1.8s ease-out infinite}
+@keyframes tourPulso{0%{opacity:.9;transform:scale(1)}100%{opacity:0;transform:scale(1.06)}}
+.tour-card{position:fixed;width:min(360px,calc(100vw - 32px));background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:18px;box-shadow:0 24px 60px rgba(5,10,20,.45);padding:18px 18px 14px;pointer-events:auto;transition:top .38s cubic-bezier(.2,.8,.2,1),left .38s cubic-bezier(.2,.8,.2,1),opacity .25s}
+.tour-card .t-passo{font-family:var(--f-data);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.tour-card h3{margin:6px 0 6px;font-size:18px;line-height:1.25;color:var(--ink)}
+.tour-card p{margin:0;font-size:14px;line-height:1.55;color:var(--tre)}
+.tour-barra{height:3px;border-radius:3px;background:var(--line);margin:14px 0 12px;overflow:hidden}
+.tour-barra i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),#8EC1FF);border-radius:3px;transition:width .38s}
+.tour-acoes{display:flex;align-items:center;gap:8px}
+.tour-acoes .pular{margin-right:auto;background:none;border:0;color:var(--muted);font:inherit;font-size:13px;cursor:pointer;padding:6px 2px;text-decoration:underline;text-underline-offset:3px}
+.tour-acoes .tb{font:inherit;font-size:14px;font-weight:600;border-radius:999px;padding:8px 16px;cursor:pointer;border:1px solid var(--line);background:var(--card2);color:var(--ink)}
+.tour-acoes .tb.prox{background:var(--accent);border-color:var(--accent);color:#fff}
+.tour-acoes .tb:focus-visible,.tour-acoes .pular:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media (max-width:640px){ .tour-card{left:16px!important;right:16px;width:auto;bottom:16px;top:auto!important} }
+@media (prefers-reduced-motion: reduce){ .tour-luz,.tour-card,.tour-barra i{transition:none} .tour-luz::after{animation:none} }
 </style>
 
 <div class="wrap">
@@ -640,6 +664,7 @@ body:not([data-v="buscar"]) #banco{display:none}
       </form>
       <div class="linha" id="exemplos"></div>
       <div class="modo" id="modo"></div>
+      <button type="button" class="tour-lnk" data-tour><i aria-hidden="true">▶</i>Conhecer o site em 30 segundos</button>
     </div>
     <p class="hero-leg" aria-hidden="true"><i></i>Cada ponto é uma das questões do banco: as de mesmo assunto ficam juntas, como constelações. Ao buscar, as encontradas acendem.</p>
   </header>
@@ -1184,8 +1209,8 @@ function vistaCobrou(){
          <h3 class="ca-sub queda">▼ Perdendo espaço</h3>${queda.length?queda.map(x=>lMud(x,"queda")).join(""):`<p class="vazio">Nenhum conteúdo caiu mais de 1,5 ponto.</p>`}`},
     heat:{t:"Conteúdo × prova", d:"Quantas questões de cada conteúdo caíram em cada prova. As colunas do período escolhido ficam em destaque.", h:heat},
     reguas:{t:"Cada prova, por área", d:`Cada régua soma as questões do ano${np<ANOS.length?"; o período escolhido fica em destaque":""}.`, h:`<div class="reguas">${reguas}</div>${leg}`},
-    habs:{t:"Habilidades da Matriz mais cobradas", d:`As habilidades do Enem que as questões de ${perTxt}${areaTxt} mais exigem. Toque numa habilidade para ver as questões.`,
-      h:`<div class="ca-habs">${hs.map(([h,n])=>`<button type="button" class="ca-h" data-hab="${h}"><b class="num">${h}</b><span>${esc(DADOS.matriz[h])}</span><span class="ca-bar"><i style="width:${(100*n/mxHb).toFixed(1)}%"></i></span><span class="num">${n}</span></button>`).join("")}</div>`},
+    habs:{t:"Habilidades da Matriz mais cobradas", d:`As habilidades do Enem que as questões de ${perTxt}${areaTxt} mais exigem. Toque numa habilidade para ver as questões.${QP.some(q=>q.habProv)?" As questões de 2026 ainda não entram nesta conta: o Inep não divulgou as habilidades oficiais delas.":""}`,
+      h:hs.length?`<div class="ca-habs">${hs.map(([h,n])=>`<button type="button" class="ca-h" data-hab="${h}"><b class="num">${h}</b><span>${esc(DADOS.matriz[h])}</span><span class="ca-bar"><i style="width:${(100*n/mxHb).toFixed(1)}%"></i></span><span class="num">${n}</span></button>`).join("")}</div>`:`<p class="vazio">Ainda sem dados para este período: o Inep não divulgou as habilidades oficiais da prova de 2026.</p>`},
     tipos:{t:"Como são as questões", d:`O formato das questões de ${perTxt}${areaTxt}.`,
       h:`<div class="ca-tipos">
          <div class="ca-tp"><b class="num">${QP.length?caPct(fig/QP.length,0):"—"}</b><span>dependem de figura, gráfico ou tabela</span></div>
@@ -1255,7 +1280,7 @@ function vistaComo(){
   destaque=[]; const M=DADOS.qualidade;
   const passos=[
     {t:"Questão",d:"Enunciado e alternativas das 714 questões, conferidos com as provas oficiais.",a:AREAS[0],ic:'<path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 13h7M9 17h5"/>'},
-    {t:"Etiquetas",d:"Conteúdos, o que a questão pede, palavras-chave e buscas típicas; a habilidade é a classificação oficial do Inep.",a:AREAS[3],ic:'<path d="M3 12V4h8l10 10-8 8z"/><circle cx="7.5" cy="8.5" r="1.5"/>'},
+    {t:"Etiquetas",d:"Conteúdos, o que a questão pede, palavras-chave e buscas típicas; a habilidade é a classificação oficial do Inep (nas questões de 2026, a indicada pela pesquisa, até o Inep divulgar a oficial).",a:AREAS[3],ic:'<path d="M3 12V4h8l10 10-8 8z"/><circle cx="7.5" cy="8.5" r="1.5"/>'},
     {t:"Vetor",d:"O Qwen transforma cada questão em 1.024 números que guardam o significado.",a:AREAS[1],ic:'<path d="M4 18 10 6l4 8 2-4 4 8"/>'},
     {t:"Busca",d:"A busca é comparada com os vetores prontos e com as palavras da questão.",a:AREAS[2],ic:'<circle cx="11" cy="11" r="6"/><path d="m20 20-4-4"/>'},
     {t:"Resultado",d:"As questões mais próximas aparecem primeiro e acendem no mapa.",a:AREAS[4],ic:'<path d="M5 12l5 5L20 7"/>'}];
@@ -1278,7 +1303,7 @@ function vistaGuia(){
   const buscar=t=>`<button type="button" class="bt" data-guia-busca="${esc(t)}">Buscar “${esc(t)}”</button>`;
   const secs=[["g-apr","Apresentação e objetivos"],["g-pub","Para quem é"],["g-prof","Orientações ao professor"],["g-aula","Exemplo de roteiro de aula"],["g-est","Orientações ao estudante"],["g-lim","Limites de uso"],["g-fic","Ficha técnica e como citar"],["g-ref","Referências"]];
   $("#vista").innerHTML=`<div class="guia">
-  <nav class="card guia-sum" aria-label="Sumário do guia"><span class="eyebrow">Sumário</span><ol>${secs.map(([i,t])=>`<li><button type="button" data-ir="${i}">${t}</button></li>`).join("")}</ol></nav>
+  <nav class="card guia-sum" aria-label="Sumário do guia"><span class="eyebrow">Sumário</span><button type="button" class="bt guia-tour" data-tour>▶ Fazer o tour do site</button><ol>${secs.map(([i,t])=>`<li><button type="button" data-ir="${i}">${t}</button></li>`).join("")}</ol></nav>
   <div class="guia-corpo">
    <section class="card painel" id="g-apr"><span class="eyebrow">Guia do recurso educacional</span><h2>Apresentação e objetivos</h2>
     <p>O Busca Enem Matemática é um site gratuito, sem cadastro e sem instalação, que reúne as ${Q.length} questões de Matemática das provas regulares do Enem de ${anos[0]} a ${anos[anos.length-1]} (caderno azul) e permite encontrá-las pelo significado: você escreve o que procura com as suas palavras, como “desconto sobre desconto”, e recebe as questões que tratam do assunto, mesmo que o enunciado use outras palavras.</p>
@@ -1331,7 +1356,7 @@ function vistaGuia(){
     <li>A busca por palavras funciona na hora. Para buscar também pelo significado, ligue a <b>busca inteligente</b>: ela baixa um modelo grande (cerca de 567 MB) uma única vez; prefira fazer isso no Wi-Fi.</li></ol></section>
    <section class="card painel" id="g-lim"><h2>Limites de uso</h2>
     <ul><li>O site cobre as provas regulares de ${anos[0]} a ${anos[anos.length-1]} (caderno azul) e precisa ser atualizado a cada nova edição do Enem.</li>
-    <li>Os conteúdos de cada questão foram escritos por um modelo de linguagem e conferidos pelo autor por amostragem; podem faltar conteúdos em algumas questões. A habilidade mostrada é a classificação oficial do Inep.</li>
+    <li>Os conteúdos de cada questão foram escritos por um modelo de linguagem e conferidos pelo autor por amostragem; podem faltar conteúdos em algumas questões. A habilidade mostrada é a classificação oficial do Inep; nas questões de 2026, enquanto o Inep não divulga a oficial, aparece a indicada pela pesquisa, com aviso.</li>
     <li>A busca inteligente exige um navegador atual e um download grande na primeira vez; sem ela, a busca usa as palavras e as etiquetas.</li>
     <li>Nas questões de 2020 em diante com figura ou tabela, a questão aparece como imagem da prova; leitores de tela leem apenas a descrição da imagem.</li>
     <li>O site ajuda a escolher questões; não substitui o planejamento do professor nem a resolução comentada.</li></ul></section>
@@ -1476,6 +1501,57 @@ $("#formBusca").addEventListener("submit",e=>{ e.preventDefault(); estado.consul
 const EX=["análise combinatória envolvendo combinação","chance de sortear uma bola","desconto em porcentagem","volume de caixa d'água","gráfico de função afim","escala de um mapa"];
 $("#exemplos").innerHTML=`<span class="cont">Experimente</span>`+EX.map(t=>`<button type="button" class="pill">${esc(t)}</button>`).join("");
 $("#exemplos").addEventListener("click",e=>{ const b=e.target.closest(".pill"); if(!b) return; $("#q").value=b.textContent; estado.consulta=b.textContent; estado.parecidaDe=null; estado.exemplo=false; estado.rolar=true; ir("buscar"); });
+
+/* tour guiado: abre sozinho na primeira visita; depois, pelo botão do topo ou do Guia */
+const TOUR=[
+  {sel:"#formBusca",t:"Comece por aqui",d:"Digite um assunto (porcentagem), um contexto (conta de luz) ou cole o texto de uma questão. A busca entende o sentido, não só as palavras."},
+  {sel:"#exemplos",t:"Sem ideia? Toque num exemplo",d:"Cada exemplo já faz uma busca pronta, para você ver como o site responde."},
+  {sel:"#modo",t:"Busca por palavras ou inteligente",d:"A busca por palavras é instantânea. A busca inteligente procura também pelo significado; ela baixa um arquivo grande uma única vez."},
+  {sel:"#banco",t:"O banco de questões",d:"Todas as questões de Matemática do Enem de 2011 a 2026, separadas pelas cinco áreas. Toque numa área para ver as questões dela."},
+  {sel:'.aba[data-v="conteudos"]',t:"Conteúdos e subtópicos",d:"Escolha um conteúdo e veja, em barras, quantas questões o Enem cobrou de cada parte dele. Toque nas barras para montar a aula."},
+  {sel:'.aba[data-v="cobrou"]',t:"O que cai no Enem",d:"Quais conteúdos mais caem, em qualquer período, e o que subiu ou caiu nas últimas provas."},
+  {sel:'.aba[data-v="guia"]',t:"Guia do professor e do estudante",d:"Passo a passo, sugestões de aula e limites de uso. O botão para rever este tour fica lá."}
+];
+let tourI=0, tourEl=null;
+const tourVis=el=>{ if(!el) return false; const r=el.getBoundingClientRect(); return r.width>4&&r.height>4&&getComputedStyle(el).visibility!=="hidden"; };
+function tourPassos(){ return TOUR.filter(p=>tourVis(document.querySelector(p.sel))); }
+function abrirTour(){
+  if(tourEl) return; if((location.hash||"#buscar")!=="#buscar"){ location.hash="buscar"; setTimeout(abrirTour,350); return; }
+  tourI=0; tourEl=document.createElement("div"); tourEl.className="tour"; tourEl.setAttribute("role","dialog"); tourEl.setAttribute("aria-modal","true"); tourEl.setAttribute("aria-label","Tour do site");
+  tourEl.innerHTML=`<div class="tour-bloq"></div><div class="tour-luz"></div><div class="tour-card" aria-live="polite"></div>`;
+  document.body.appendChild(tourEl); tourEl.querySelector(".tour-bloq").addEventListener("click",()=>fecharTour());
+  addEventListener("resize",tourPos); addEventListener("keydown",tourTecla,true); tourMostra();
+}
+function fecharTour(){ if(!tourEl) return; try{localStorage.setItem("tourVisto","1");}catch(e){} removeEventListener("resize",tourPos); removeEventListener("keydown",tourTecla,true); tourEl.remove(); tourEl=null; $("#q")?.focus({preventScroll:true}); }
+function tourTecla(e){ if(!tourEl) return; if(e.key==="Escape"){ e.preventDefault(); e.stopPropagation(); fecharTour(); } else if(e.key==="ArrowRight"){ e.preventDefault(); tourVai(1); } else if(e.key==="ArrowLeft"){ e.preventDefault(); tourVai(-1); } }
+function tourVai(d){ const P=tourPassos(); tourI=Math.max(0,tourI+d); if(tourI>=P.length){ fecharTour(); return; } tourMostra(); }
+function tourMostra(){
+  const P=tourPassos(); if(!P.length){ fecharTour(); return; } tourI=Math.min(tourI,P.length-1);
+  const p=P[tourI], el=document.querySelector(p.sel), ult=tourI===P.length-1;
+  const suave=matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth";
+  if(innerWidth<=640){ if(!el.closest(".barra-wrap")){ const topo=(document.querySelector(".barra-wrap")?.getBoundingClientRect().bottom||0)+12; scrollTo({top:scrollY+el.getBoundingClientRect().top-topo,behavior:suave}); } }
+  else el.scrollIntoView({block:"center",behavior:suave});
+  tourEl.querySelector(".tour-card").innerHTML=`<span class="t-passo">${tourI+1} de ${P.length}</span><h3>${p.t}</h3><p>${p.d}</p>
+    <div class="tour-barra"><i style="width:${((tourI+1)/P.length*100).toFixed(1)}%"></i></div>
+    <div class="tour-acoes"><button type="button" class="pular">${ult?"Fechar":"Pular o tour"}</button>${tourI?`<button type="button" class="tb volta">Voltar</button>`:""}<button type="button" class="tb prox">${ult?"Começar a usar":"Próximo"}</button></div>`;
+  const c=tourEl.querySelector(".tour-card");
+  c.querySelector(".pular").onclick=fecharTour; c.querySelector(".prox").onclick=()=>tourVai(1); const v=c.querySelector(".volta"); if(v) v.onclick=()=>tourVai(-1);
+  c.querySelector(".prox").focus({preventScroll:true});
+  tourPos(); setTimeout(tourPos,420);
+}
+function tourPos(){
+  if(!tourEl) return; const P=tourPassos(); const p=P[tourI]; if(!p) return; const el=document.querySelector(p.sel); if(!el) return;
+  const r=el.getBoundingClientRect(), m=8, luz=tourEl.querySelector(".tour-luz"), c=tourEl.querySelector(".tour-card");
+  Object.assign(luz.style,{top:(r.top-m)+"px",left:(r.left-m)+"px",width:(r.width+2*m)+"px",height:(r.height+2*m)+"px"});
+  if(innerWidth<=640) return;
+  const cw=c.offsetWidth, ch=c.offsetHeight, gap=16;
+  let top=r.bottom+m+gap; if(top+ch>innerHeight-12) top=Math.max(12,r.top-m-gap-ch);
+  let left=Math.min(Math.max(12,r.left),innerWidth-cw-12);
+  c.style.top=top+"px"; c.style.left=left+"px";
+}
+document.addEventListener("click",e=>{ if(e.target.closest("[data-tour]")){ e.preventDefault(); abrirTour(); } });
+setTimeout(()=>{ try{ if(localStorage.getItem("tourVisto")) return; }catch(e){ return; } if((location.hash||"#buscar")==="#buscar"&&!$("#q").value&&$("#veu").hidden) abrirTour(); },1600);
+
 /* modo claro e escuro */
 const RAIZ=document.documentElement;
 try{ const t=localStorage.getItem("buscaEnemTema"); if(t==="dark"||t==="light") RAIZ.dataset.theme=t; }catch(e){}
