@@ -27,17 +27,17 @@
 }
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
   --bg:#151B2E; --card:#1C2339; --card2:#232B45; --ink:#F2F4F9; --tit:#DDE2EE; --tit-w:600; --tre:#C9CFDD; --muted:#B4BBCC; --line:#33405F;
-  --a1:#86B6F5; --a1s:#1B2D48; --a2:#B49CFA; --a2s:#2A2148; --a3:#6BDBA9; --a3s:#12352D;
+  --a1:#86B6F5; --a1s:#1B2D48; --a2:#B49CFA; --a2s:#2A2148; --a3:#9CC9B4; --a3s:#22302C;
   --a4:#EDC26A; --a4s:#3A2E10; --a5:#F79B82; --a5s:#42211A;
-  --accent:#78A9E6; --ok:#5FCB9C; --ok-s:#13302A; --warn:#E5B85A;
+  --accent:#78A9E6; --ok:#9CC9B4; --ok-s:#22302C; --warn:#E5B85A;
   --wash:linear-gradient(120deg,#212A48 0%,#1F2740 45%,#1C2B36 100%); --folha:#212A43;
   --rail:linear-gradient(90deg,#D8B25C,#78A9E6 35%,#5FCB9C 70%,#EE8C74);
   --shadow:0 1px 2px rgba(0,0,0,.35),0 12px 34px rgba(0,0,0,.35); color-scheme:dark } }
 :root[data-theme="dark"]{
   --bg:#151B2E; --card:#1C2339; --card2:#232B45; --ink:#F2F4F9; --tit:#DDE2EE; --tit-w:600; --tre:#C9CFDD; --muted:#B4BBCC; --line:#33405F;
-  --a1:#86B6F5; --a1s:#1B2D48; --a2:#B49CFA; --a2s:#2A2148; --a3:#6BDBA9; --a3s:#12352D;
+  --a1:#86B6F5; --a1s:#1B2D48; --a2:#B49CFA; --a2s:#2A2148; --a3:#9CC9B4; --a3s:#22302C;
   --a4:#EDC26A; --a4s:#3A2E10; --a5:#F79B82; --a5s:#42211A;
-  --accent:#78A9E6; --ok:#5FCB9C; --ok-s:#13302A; --warn:#E5B85A;
+  --accent:#78A9E6; --ok:#9CC9B4; --ok-s:#22302C; --warn:#E5B85A;
   --wash:linear-gradient(120deg,#212A48 0%,#1F2740 45%,#1C2B36 100%); --folha:#212A43;
   --rail:linear-gradient(90deg,#D8B25C,#78A9E6 35%,#5FCB9C 70%,#EE8C74);
   --shadow:0 1px 2px rgba(0,0,0,.35),0 12px 34px rgba(0,0,0,.35); color-scheme:dark }
@@ -632,6 +632,12 @@ body:not([data-v="buscar"]) #banco{display:none}
 .tour-acoes .tb:focus-visible,.tour-acoes .pular:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 @media (max-width:640px){ .tour-card{left:16px!important;right:16px;width:auto;bottom:16px;top:auto!important} }
 @media (prefers-reduced-motion: reduce){ .tour-luz,.tour-card,.tour-barra i{transition:none} .tour-luz::after{animation:none} }
+
+/* conteúdos relacionados na janela: uma cor só para "também cobra", sem brilho */
+:root{--rel:#8A5413;--rel-s:#FBF1E1;--rel-b:#E9C995}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){--rel:#E2C08C;--rel-s:#2D2518;--rel-b:#5E4A28} }
+:root[data-theme="dark"]{--rel:#E2C08C;--rel-s:#2D2518;--rel-b:#5E4A28}
+.ficha .tag.cr{color:var(--rel);background:var(--rel-s);border:1.5px solid var(--rel-b);font-weight:600}
 </style>
 
 <div class="wrap">
