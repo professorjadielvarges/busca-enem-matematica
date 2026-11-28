@@ -201,7 +201,7 @@ body:not([data-v="buscar"]) .hero h1{font-size:clamp(28px,4vw,44px)}
 .mapa circle{cursor:pointer;transition:opacity .25s}
 .mapa circle:hover{stroke:var(--ink);stroke-width:4}
 .mapa .rk{font-family:var(--f-data);font-size:30px;paint-order:stroke;stroke:var(--card2);stroke-width:6px;font-weight:800;fill:var(--ink);pointer-events:none}
-.legenda{display:flex;flex-wrap:wrap;gap:6px 12px;font-size:12px;color:var(--muted)}
+.pede br{display:block;content:"";margin-top:5px} .legenda{display:flex;flex-wrap:wrap;gap:6px 12px;font-size:12px;color:var(--muted)}
 .legenda i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;vertical-align:-1px}
 .filtros{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .filtros label{font-size:12px;color:var(--muted);font-weight:600;display:flex;align-items:center;gap:6px}
@@ -943,7 +943,7 @@ function cartaoMapa(){
   return `<aside class="card rail mapa-card"><div class="pad">
     <div class="titulo-res"><span class="eyebrow">Mapa das questões</span><span class="cont">${destaque.length?`${Math.min(destaque.length,30)} em destaque`:`${N} pontos`}</span></div>
     ${desenharMapa()}
-    <p class="pede">Cada ponto é uma questão. Questões que tratam do mesmo assunto ficam perto umas das outras, mesmo quando usam palavras diferentes. Os nomes mostram o assunto de cada região. Os números marcam as 5 primeiras da busca. Passe o mouse sobre um ponto para ver a questão; toque para ver as parecidas.</p>
+    <p class="pede">Cada ponto é uma questão.<br>Questões que tratam do mesmo assunto ficam perto umas das outras, mesmo quando usam palavras diferentes.<br>Os nomes mostram o assunto de cada região.<br>Os números marcam as 5 primeiras da busca.<br>Passe o mouse sobre um ponto para ver a questão; toque para ver as parecidas.</p>
     <div class="legenda">${AREAS.map(a=>`<span><i style="background:var(${a.c})"></i>${esc(a.curto)}</span>`).join("")}</div>
   </div></aside>`;
 }
